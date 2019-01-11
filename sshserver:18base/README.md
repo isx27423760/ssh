@@ -31,6 +31,17 @@ session     sufficient    pam_mkhomedir.so
 
     Editem el ficher ** /etc/ssh/ssh_config ** on a final de linea afegim la restriccio als usuaris.
 
+    ```
+    AllowUsers pere pau marta jordi local01 local02
+    ```
+
+    I de pas posem el port 1022 en comptes del per defecte 22, nomes cal decomentar la linea **Port** :
+    
+	```
+	Port 1022
+	```
+
+
 2. Configuració de ** pam_access.so **.
 
     Editem el seguent ficher ** /etc/pam.d/sshd **, afegim la seguent linea :
@@ -70,7 +81,7 @@ session     sufficient    pam_mkhomedir.so
 4. Comprovació
 
 	```
-	[root@sshd docker]# ssh pau@localhost
+	[root@sshd docker]# ssh pau@localhost -p 1022
 	pau@localhost's password: 
 	Creating directory '/tmp/home/pau'.
 	[pau@sshd ~]$ pwd
@@ -80,14 +91,14 @@ session     sufficient    pam_mkhomedir.so
 	```
 	
 	```
-	[root@sshd docker]# ssh pere@localhost
+	[root@sshd docker]# ssh pere@localhost -p 1022
 	pere@localhost's password: 
 	Connection closed by ::1 port 22
 
 	```
 
 	```
-	[root@sshd docker]# ssh marta@localhost
+	[root@sshd docker]# ssh marta@localhost -p 1022
 	marta@localhost's password: 
 	Permission denied, please try again.
 	marta@localhost's password: 
@@ -95,3 +106,25 @@ session     sufficient    pam_mkhomedir.so
 	marta@localhost's password: 
 	marta@localhost: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
 	```
+
+	Si volem comprovar de un host diferent al servidor ,engegem un container de hostpam que tenim:
+	
+	```
+ 	$docker run --privileged --rm --name host -h host --net ldapnet -it hostpam:18auth
+	
+	Orden para provar : # ssh user@ipservidor -p numPort
+	```
+	
+	```
+	[root@host docker]# ssh pere@172.18.0.3 -p 1022
+
+	[root@host docker]# ssh marta@172.18.0.3 -p 1022
+
+	[root@host docker]# ssh pau@172.18.0.3 -p 1022
+	pau@172.18.0.3's password: 
+	Last login: Fri Jan 11 08:33:24 2019 from 172.18.0.1
+	[pau@sshd ~]$ pwd
+	/tmp/home/pau
+
+	```
+
