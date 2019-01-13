@@ -11,9 +11,11 @@ Tambe permet inciar sessions remotes de users locals i usuaris ldap, el servidor
 #### Execució 
 
 ```
-docker run --rm --name ldap -h ldap --net ldapnet -d ldapserver:18group
+docker run --rm --name ldap -h ldap --net ldapnet -d francs2/ldapserver:18group
 
-docker run -p 1022:1022 --privileged --rm --name sshd -h sshd --net ldapnet -it sshserver:18base
+docker run -p 1022:1022 --privileged --rm --name sshd -h sshd --net ldapnet -it francs2/sshserver:18base
+
+docker run --privileged --rm --name host -h host --net ldapnet -it francs2/hostpam:18ssh
 
 ```
 
@@ -110,7 +112,7 @@ session     sufficient    pam_mkhomedir.so
 	Si volem comprovar de un host diferent al servidor ,engegem un container de hostpam que tenim:
 	
 	```
- 	$docker run --privileged --rm --name host -h host --net ldapnet -it hostpam:18auth
+ 	$docker run --privileged --rm --name host -h host --net ldapnet -it francs2/hostpam:18ssh
 	
 	Orden para provar : # ssh user@ipservidor -p numPort
 	```
